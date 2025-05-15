@@ -60,6 +60,54 @@
             content: "⚾";
             margin-left: 5px;
         }
+        
+        /* Tab styles */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0d47a1;
+        }
+        
+        .tab-button {
+            background-color: #1b263b;
+            border: none;
+            color: #e0e1dd;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            transition: all 0.3s ease;
+            margin-right: 5px;
+        }
+        
+        .tab-button:hover {
+            background-color: #2c3e50;
+        }
+        
+        .tab-button.active {
+            background-color: #0d47a1;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .status-sold {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .status-used {
+            color: #ff9800;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -67,68 +115,178 @@
     
     <div class="container">
         <h1>Sea Dragon Team (SDN)</h1>
-        <h2>Core Team - Reset Run (10pm-1am)</h2>
         
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Class</th>
-                    <th>Name</th>
-                    <th>Suffix</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Paladin</td>
-                    <td>Ymint</td>
-                    <td>int, int</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Priest</td>
-                    <td class="baseball">Meg</td>
-                    <td>magic, magic</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Priest</td>
-                    <td>Tangyee</td>
-                    <td>pending</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Mercenary</td>
-                    <td>Solar</td>
-                    <td>wind, iw</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Acrobat</td>
-                    <td class="baseball">lyn</td>
-                    <td>wind, iw</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>Moonlord</td>
-                    <td>bjl</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td>Artillery</td>
-                    <td class="baseball">Mino</td>
-                    <td>magic, tent</td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>Force User</td>
-                    <td class="baseball">Juddy</td>
-                    <td>1 int andy</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('teams')">Teams</button>
+            <button class="tab-button" onclick="openTab('loots')">Loots</button>
+        </div>
+        
+        <div id="teams" class="tab-content active">
+            <h2>Core Team - Reset Run (10pm-1am)</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Class</th>
+                        <th>Name</th>
+                        <th>Suffix</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Paladin</td>
+                        <td>Ymint</td>
+                        <td>int, int</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Priest</td>
+                        <td class="baseball">Meg</td>
+                        <td>magic, magic</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Priest</td>
+                        <td>Tangyee</td>
+                        <td>pending</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Mercenary</td>
+                        <td>Solar</td>
+                        <td>wind, iw</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Acrobat</td>
+                        <td class="baseball">lyn</td>
+                        <td>wind, iw</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Moonlord</td>
+                        <td>bjl</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Artillery</td>
+                        <td class="baseball">Mino</td>
+                        <td>magic, tent</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Force User</td>
+                        <td class="baseball">Juddy</td>
+                        <td>1 int andy</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="loots" class="tab-content">
+            <h2>Team Loots Distribution</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Class</th>
+                        <th>Name</th>
+                        <th>Loot</th>
+                        <th>Status</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Paladin</td>
+                        <td>Ymint</td>
+                        <td>Archangel Sword</td>
+                        <td class="status-used">Used</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Priest</td>
+                        <td class="baseball">Meg</td>
+                        <td>Vitality Gem</td>
+                        <td class="status-sold">Sold</td>
+                        <td>3500g</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Priest</td>
+                        <td>Tangyee</td>
+                        <td>Mana Crystal</td>
+                        <td class="status-used">Used</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Mercenary</td>
+                        <td>Solar</td>
+                        <td>Wind Gloves</td>
+                        <td class="status-used">Used</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Acrobat</td>
+                        <td class="baseball">lyn</td>
+                        <td>Agility Pendant</td>
+                        <td class="status-sold">Sold</td>
+                        <td>4200g</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Moonlord</td>
+                        <td>bjl</td>
+                        <td>Luna Crystal</td>
+                        <td class="status-sold">Sold</td>
+                        <td>2800g</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Artillery</td>
+                        <td class="baseball">Mino</td>
+                        <td>Magic Enhancer</td>
+                        <td class="status-used">Used</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Force User</td>
+                        <td class="baseball">Juddy</td>
+                        <td>Force Crystal</td>
+                        <td class="status-sold">Sold</td>
+                        <td>5000g</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+    
+    <script>
+        function openTab(tabName) {
+            var i, tabContent, tabButtons;
+            
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].classList.remove("active");
+            }
+            
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+    </script>
 </body>
 </html>
