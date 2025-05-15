@@ -3,41 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WIP Page</title>
+    <title>Sea Dragon Team (SDN)</title>
     <style>
         body, html {
-            height: 100%;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #0d1b2a;
+            color: #e0e1dd;
+        }
+        .banner {
+            display: block;
+            max-width: 500px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.7);
         }
         .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #1b263b;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #e0e1dd;
             text-align: center;
-            position: relative;
+            margin-bottom: 30px;
         }
-        .wip-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 36px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: bold;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        img {
-            max-width: 100%;
-            max-height: 80vh;
-            border-radius: 10px;
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #415a77;
+        }
+        th {
+            background-color: #0d47a1;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #141f33;
+        }
+        tr:hover {
+            background-color: #2c3e50;
         }
     </style>
 </head>
 <body>
+    <img class="banner" src="https://i.pinimg.com/originals/3a/5f/a6/3a5fa66a0eb93df05cfc9c248995eb54.gif" alt="DanMachi Banner">
+    
     <div class="container">
-        <img src="https://static.wikia.nocookie.net/dragonnest_gamepedia/images/5/5d/Academic.png" alt="WIP Image">
-        <div class="wip-text">WIP</div>
+        <h1>Sea Dragon Team (SDN)</h1>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Suffix</th>
+                    <th>Loot</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Bell Cranel</td>
+                    <td>Adventurer</td>
+                    <td>Rabbit Foot</td>
+                    <td>Minotaur Horn</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Ais Wallenstein</td>
+                    <td>Swordswoman</td>
+                    <td>Sword Princess</td>
+                    <td>Dragon Scale</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Liliruca Arde</td>
+                    <td>Supporter</td>
+                    <td>Daring</td>
+                    <td>Magic Stone</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Welf Crozzo</td>
+                    <td>Blacksmith</td>
+                    <td>Ignis</td>
+                    <td>Rare Metal</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Mikoto Yamato</td>
+                    <td>Samurai</td>
+                    <td>Eternal Shadow</td>
+                    <td>Undine Silk</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
