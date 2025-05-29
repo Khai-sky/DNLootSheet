@@ -643,9 +643,39 @@
             contents[index].classList.add('active');
         }
 
-        // Modify loadTeams function
+        // Add function to check and remove expired raids
+        async function checkAndRemoveExpiredRaids() {
+            try {
+                const raids = await db.getRaids();
+                const now = new Date();
+                const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
+                const currentTime = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+                for (const raid of raids) {
+                    // Check if raid day matches current day
+                    if (raid.day === currentDay) {
+                        // Parse raid time (assuming format HH:mm)
+                        const [raidHour, raidMinute] = raid.time.split(':');
+                        const raidTime = `${raidHour.padStart(2, '0')}:${raidMinute}`;
+
+                        // If raid time has passed, remove the raid
+                        if (raidTime <= currentTime) {
+                            await db.deleteRaid(raid.id);
+                            console.log(`Removed expired raid: ${raid.teamName} - ${raid.nestType}`);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking expired raids:', error);
+            }
+        }
+
+        // Modify loadTeams function to check for expired raids first
         async function loadTeams() {
             try {
+                // Check for expired raids before loading
+                await checkAndRemoveExpiredRaids();
+
                 const raids = await db.getRaids();
                 const teamTabs = document.getElementById('teamTabs');
                 const teamContents = document.getElementById('teamContents');
@@ -783,6 +813,11 @@
                 // Get all scheduled raids
                 const raids = await db.getRaids();
                 
+                if (raids.length === 0) {
+                    Swal.fire('No Raids', 'There are no raids available to register for.', 'info');
+                    return;
+                }
+
                 // Create HTML for raid selection
                 const raidOptions = raids.map(raid => 
                     `<option value="${raid.id}">${raid.teamName} - ${raid.nestType} (${raid.day}, ${raid.time})</option>`
@@ -859,7 +894,16 @@
 
                 if (formValues) {
                     // Get the selected raid
-                    const selectedRaid = raids.find(raid => raid.id === formValues.raidId);
+                    const selectedRaid = raids.find(raid => raid.id === parseInt(formValues.raidId));
+                    
+                    if (!selectedRaid) {
+                        throw new Error('Selected raid not found');
+                    }
+
+                    // Initialize players array if it doesn't exist
+                    if (!selectedRaid.players) {
+                        selectedRaid.players = [];
+                    }
                     
                     // Create registration data
                     const registrationData = {
@@ -895,8 +939,9 @@
             }
         }
 
-        // Modify setInterval to use a longer interval
-        setInterval(loadTeams, 10000); // Refresh every 10 seconds instead of 5
+        // Set up intervals for checking expired raids and refreshing teams
+        setInterval(checkAndRemoveExpiredRaids, 60000); // Check every minute
+        setInterval(loadTeams, 10000); // Refresh display every 10 seconds
 
         async function showScheduleForm() {
             const { value: formValues } = await Swal.fire({
