@@ -82,7 +82,14 @@ class Database {
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction(['raids'], 'readwrite');
             const store = transaction.objectStore('raids');
-            const request = store.put(raid);
+            
+            // Ensure raid ID is a number
+            const raidToUpdate = {
+                ...raid,
+                id: parseInt(raid.id)
+            };
+            
+            const request = store.put(raidToUpdate);
             
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
