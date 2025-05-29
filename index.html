@@ -361,6 +361,63 @@
         .swal2-label {
             color: #e0e1dd !important;
         }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #415a77;
+            border-radius: 4px;
+            background-color: #0d1b2a;
+            color: #e0e1dd;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .btn-primary {
+            background-color: #0d47a1;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1565c0;
+        }
+        
+        .swal2-popup {
+            background-color: #1b263b !important;
+            color: #e0e1dd !important;
+        }
+        
+        .swal2-title, .swal2-content {
+            color: #e0e1dd !important;
+        }
+        
+        .swal2-input, .swal2-select, .swal2-textarea {
+            background-color: #0d1b2a !important;
+            color: #e0e1dd !important;
+            border-color: #415a77 !important;
+        }
+        
+        .swal2-input:focus, .swal2-select:focus, .swal2-textarea:focus {
+            border-color: #0d47a1 !important;
+            box-shadow: 0 0 0 2px rgba(13, 71, 161, 0.2) !important;
+        }
     </style>
     <script src="js/db.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -379,15 +436,20 @@
     <div id="mainContent" class="main-content">
         <img class="banner" src="https://i.pinimg.com/originals/3a/5f/a6/3a5fa66a0eb93df05cfc9c248995eb54.gif" alt="DanMachi Banner">
         
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="showScheduleForm()">Schedule a Raid</button>
+            <button class="btn btn-primary" onclick="showRegistrationForm()">Register to Raid</button>
+        </div>
+
         <div class="container">
             <h1>Sea Dragon Team (SDN)</h1>
             
             <div class="tabs">
-                <button class="tab-button active" onclick="openTab('teams')">Teams</button>
+                <button class="tab-button active" onclick="openTab('scheduler')">Scheduled Raids</button>
             </div>
             
-            <div id="teams" class="tab-content active">
-                <h2>Current Teams</h2>
+            <div id="scheduler" class="tab-content active">
+                <h2>Scheduled Raids</h2>
                 <div class="team-tabs-container">
                     <div class="team-tabs" id="teamTabs">
                         <!-- Dynamic team tabs will be added here -->
@@ -395,82 +457,6 @@
                     <div id="teamContents">
                         <!-- Dynamic team contents will be added here -->
                     </div>
-                </div>
-            </div>
-
-            <div class="forms-container">
-                <div class="form-section">
-                    <h2>Schedule a Raid</h2>
-                    <div class="scheduler-form">
-                        <div class="form-group">
-                            <label for="raidName">Raid Name:</label>
-                            <input type="text" id="raidName" value="SDN" readonly>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="teamName">Team Name:</label>
-                            <input type="text" id="teamName" placeholder="Enter team name (e.g., K1, K2)">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="raidDay">Raid Day:</label>
-                            <select id="raidDay" required>
-                                <option value="">Select day</option>
-                                <option value="Monday">Monday</option>
-                                <option value="Tuesday">Tuesday</option>
-                                <option value="Wednesday">Wednesday</option>
-                                <option value="Thursday">Thursday</option>
-                                <option value="Friday">Friday</option>
-                                <option value="Saturday">Saturday</option>
-                                <option value="Sunday">Sunday</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="raidTime">Raid Time:</label>
-                            <input type="text" id="raidTime" placeholder="e.g., 22:00-01:00">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="nestType">Nest Type:</label>
-                            <select id="nestType" required>
-                                <option value="">Select nest</option>
-                                <option value="Apocalypse">Apocalypse</option>
-                                <option value="Manticore">Manticore</option>
-                                <option value="Apocalypse Hell">Apocalypse Hell</option>
-                                <option value="Manticore Hell">Manticore Hell</option>
-                                <option value="Sea Dragon Outskirt">Sea Dragon Outskirt</option>
-                                <option value="Sea Dragon Core">Sea Dragon Core</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Add Player:</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="playerName" placeholder="Player name">
-                                <select id="playerClass">
-                                    <option value="Paladin">Paladin</option>
-                                    <option value="Priest">Priest</option>
-                                    <option value="Mercenary">Mercenary</option>
-                                    <option value="Acrobat">Acrobat</option>
-                                    <option value="Moonlord">Moonlord</option>
-                                    <option value="Artillery">Artillery</option>
-                                    <option value="Force User">Force User</option>
-                                </select>
-                                <input type="text" id="playerSuffix" placeholder="Suffix">
-                                <button class="btn" onclick="addPlayer()">Add Player</button>
-                            </div>
-                        </div>
-                        
-                        <div id="playerList" class="player-list"></div>
-                        
-                        <button class="btn" style="margin-top: 20px;" onclick="saveRaid()">Save Raid</button>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>Register for Raid</h2>
-                    <button class="btn" onclick="showRegistrationForm()">Register to Raid</button>
                 </div>
             </div>
         </div>
@@ -614,7 +600,7 @@
                 teamContents.innerHTML = '';
                 
                 if (raids.length === 0) {
-                    teamContents.innerHTML = '<p style="text-align: center; color: #e0e1dd;">No teams registered yet.</p>';
+                    teamContents.innerHTML = '<p style="text-align: center; color: #e0e1dd;">No raids scheduled yet.</p>';
                     return;
                 }
                 
@@ -640,12 +626,23 @@
                         playersWithSlots.push({ name: 'EMPTY SLOT', class: '', suffix: '' });
                     }
                     
+                    // Convert time to 12-hour format for display
+                    let displayTime = raid.displayTime;
+                    if (!displayTime) {
+                        const [hours, minutes] = raid.time.split(':');
+                        const hour = parseInt(hours);
+                        const amPm = hour >= 12 ? 'PM' : 'AM';
+                        const hour12 = hour % 12 || 12;
+                        displayTime = `${hour12}:${minutes} ${amPm}`;
+                    }
+                    
                     teamContent.innerHTML = `
                         <div class="team-info">
                             <p><strong>Team Name:</strong> ${raid.teamName}</p>
                             <p><strong>Nest Type:</strong> ${raid.nestType}</p>
                             <p><strong>Day:</strong> ${raid.day}</p>
-                            <p><strong>Time:</strong> ${raid.time}</p>
+                            <p><strong>Time:</strong> ${displayTime}</p>
+                            ${raid.description ? `<p><strong>Description:</strong> ${raid.description}</p>` : ''}
                             <p><strong>Players:</strong></p>
                             <table>
                                 <thead>
@@ -693,16 +690,17 @@
         // Load teams when page loads
         document.addEventListener('DOMContentLoaded', loadTeams);
 
-        // Modify saveRaid function to reload teams after saving
+        // Modify saveRaid function to include description
         async function saveRaid() {
             const raidName = document.getElementById('raidName').value;
             const teamName = document.getElementById('teamName').value;
             const day = document.getElementById('raidDay').value;
             const time = document.getElementById('raidTime').value;
             const nestType = document.getElementById('nestType').value;
+            const description = document.getElementById('raidDescription').value;
             
             if (!teamName || !day || !time || !nestType || currentPlayers.length === 0) {
-                alert('Please fill in all fields and add at least one player!');
+                alert('Please fill in all required fields and add at least one player!');
                 return;
             }
             
@@ -712,6 +710,7 @@
                 day,
                 time,
                 nestType,
+                description,
                 players: currentPlayers,
                 createdDate: new Date().toISOString()
             };
@@ -725,6 +724,7 @@
                 document.getElementById('raidDay').value = '';
                 document.getElementById('raidTime').value = '';
                 document.getElementById('nestType').value = '';
+                document.getElementById('raidDescription').value = '';
                 currentPlayers = [];
                 updatePlayerList();
                 
@@ -764,14 +764,35 @@
                             <label for="regClass">Class:</label>
                             <select id="regClass" class="swal2-input">
                                 <option value="">Select your class</option>
+                                <!-- Warrior Classes -->
+                                <option value="Warrior">Warrior</option>
+                                <option value="Swordsman">Swordsman</option>
+                                <option value="Mercenary">Mercenary</option>
+                                <!-- Archer Classes -->
+                                <option value="Archer">Archer</option>
+                                <option value="Bowmaster">Bowmaster</option>
+                                <option value="Acrobat">Acrobat</option>
+                                <!-- Sorceress Classes -->
+                                <option value="Sorceress">Sorceress</option>
+                                <option value="Elemental Lord">Elemental Lord</option>
+                                <option value="Force User">Force User</option>
+                                <!-- Cleric Classes -->
+                                <option value="Cleric">Cleric</option>
                                 <option value="Paladin">Paladin</option>
                                 <option value="Priest">Priest</option>
-                                <option value="Mercenary">Mercenary</option>
-                                <option value="Acrobat">Acrobat</option>
-                                <option value="Moonlord">Moonlord</option>
-                                <option value="Artillery">Artillery</option>
-                                <option value="Force User">Force User</option>
+                                <!-- Academic Classes -->
+                                <option value="Academic">Academic</option>
+                                <option value="Engineer">Engineer</option>
+                                <option value="Alchemist">Alchemist</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regMainSuffix">Main Weapon Suffix:</label>
+                            <input id="regMainSuffix" class="swal2-input" placeholder="Enter main weapon suffix">
+                        </div>
+                        <div class="form-group">
+                            <label for="regSecondarySuffix">Secondary Weapon Suffix:</label>
+                            <input id="regSecondarySuffix" class="swal2-input" placeholder="Enter secondary weapon suffix">
                         </div>
                     `,
                     focusConfirm: false,
@@ -782,13 +803,15 @@
                         const raidId = document.getElementById('selectedRaid').value;
                         const ign = document.getElementById('regIgn').value;
                         const playerClass = document.getElementById('regClass').value;
+                        const mainSuffix = document.getElementById('regMainSuffix').value;
+                        const secondarySuffix = document.getElementById('regSecondarySuffix').value;
                         
-                        if (!raidId || !ign || !playerClass) {
+                        if (!raidId || !ign || !playerClass || !mainSuffix || !secondarySuffix) {
                             Swal.showValidationMessage('Please fill in all fields');
                             return false;
                         }
                         
-                        return { raidId, ign, playerClass };
+                        return { raidId, ign, playerClass, mainSuffix, secondarySuffix };
                     }
                 });
 
@@ -801,6 +824,8 @@
                         raidId: formValues.raidId,
                         ign: formValues.ign,
                         class: formValues.playerClass,
+                        mainSuffix: formValues.mainSuffix,
+                        secondarySuffix: formValues.secondarySuffix,
                         registrationDate: new Date().toISOString()
                     };
 
@@ -811,7 +836,7 @@
                     selectedRaid.players.push({
                         name: formValues.ign,
                         class: formValues.playerClass,
-                        suffix: ''
+                        suffix: `${formValues.mainSuffix}, ${formValues.secondarySuffix}`
                     });
                     
                     // Update the raid in the database
@@ -830,6 +855,208 @@
 
         // Set up real-time updates
         setInterval(loadTeams, 5000); // Refresh every 5 seconds
+
+        async function showScheduleForm() {
+            const { value: formValues } = await Swal.fire({
+                title: 'Schedule a Raid',
+                html: `
+                    <div class="form-group">
+                        <label for="teamName">Team Name:</label>
+                        <input id="teamName" class="swal2-input" placeholder="Enter team name (e.g., K1, K2)">
+                    </div>
+                    <div class="form-group">
+                        <label for="raidDay">Raid Day:</label>
+                        <select id="raidDay" class="swal2-input">
+                            <option value="">Select day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="raidTime">Raid Time:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="raidHour" class="swal2-input" style="width: 80px;">
+                                <option value="">Hour</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                            </select>
+                            <select id="raidMinute" class="swal2-input" style="width: 80px;">
+                                <option value="">Min</option>
+                                <option value="00">00</option>
+                                <option value="15">15</option>
+                                <option value="30">30</option>
+                                <option value="45">45</option>
+                            </select>
+                            <select id="raidAmPm" class="swal2-input" style="width: 80px;">
+                                <option value="">AM/PM</option>
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nestType">Nest Type:</label>
+                        <select id="nestType" class="swal2-input">
+                            <option value="">Select nest</option>
+                            <option value="Apocalypse">Apocalypse</option>
+                            <option value="Manticore">Manticore</option>
+                            <option value="Apocalypse Hell">Apocalypse Hell</option>
+                            <option value="Manticore Hell">Manticore Hell</option>
+                            <option value="Sea Dragon Outskirt">Sea Dragon Outskirt</option>
+                            <option value="Sea Dragon Core">Sea Dragon Core</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="raidDescription">Description:</label>
+                        <textarea id="raidDescription" class="swal2-textarea" placeholder="Enter any additional information about the raid (e.g., requirements, notes)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Add Player:</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <input id="playerName" class="swal2-input" placeholder="Player name">
+                            <select id="playerClass" class="swal2-input">
+                                <option value="">Select class</option>
+                                <!-- Warrior Classes -->
+                                <option value="Warrior">Warrior</option>
+                                <option value="Swordsman">Swordsman</option>
+                                <option value="Mercenary">Mercenary</option>
+                                <!-- Archer Classes -->
+                                <option value="Archer">Archer</option>
+                                <option value="Bowmaster">Bowmaster</option>
+                                <option value="Acrobat">Acrobat</option>
+                                <!-- Sorceress Classes -->
+                                <option value="Sorceress">Sorceress</option>
+                                <option value="Elemental Lord">Elemental Lord</option>
+                                <option value="Force User">Force User</option>
+                                <!-- Cleric Classes -->
+                                <option value="Cleric">Cleric</option>
+                                <option value="Paladin">Paladin</option>
+                                <option value="Priest">Priest</option>
+                                <!-- Academic Classes -->
+                                <option value="Academic">Academic</option>
+                                <option value="Engineer">Engineer</option>
+                                <option value="Alchemist">Alchemist</option>
+                            </select>
+                            <input id="playerSuffix" class="swal2-input" placeholder="Suffix">
+                        </div>
+                        <button onclick="addPlayerToSchedule()" class="btn-primary" style="width: 100%;">Add Player</button>
+                    </div>
+                    <div id="schedulePlayerList" class="player-list" style="margin-top: 10px;"></div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Schedule Raid',
+                cancelButtonText: 'Cancel',
+                focusConfirm: false,
+                didOpen: () => {
+                    // Initialize player list
+                    currentPlayers = [];
+                    updateSchedulePlayerList();
+                },
+                preConfirm: () => {
+                    const teamName = document.getElementById('teamName').value;
+                    const day = document.getElementById('raidDay').value;
+                    const hour = document.getElementById('raidHour').value;
+                    const minute = document.getElementById('raidMinute').value;
+                    const amPm = document.getElementById('raidAmPm').value;
+                    const nestType = document.getElementById('nestType').value;
+                    const description = document.getElementById('raidDescription').value;
+                    
+                    if (!teamName || !day || !hour || !minute || !amPm || !nestType || currentPlayers.length === 0) {
+                        Swal.showValidationMessage('Please fill in all required fields and add at least one player');
+                        return false;
+                    }
+                    
+                    // Convert to 24-hour format for storage
+                    let hour24 = parseInt(hour);
+                    if (amPm === 'PM' && hour24 !== 12) {
+                        hour24 += 12;
+                    } else if (amPm === 'AM' && hour24 === 12) {
+                        hour24 = 0;
+                    }
+                    
+                    const time = `${hour24.toString().padStart(2, '0')}:${minute}`;
+                    
+                    return {
+                        teamName,
+                        day,
+                        time,
+                        displayTime: `${hour}:${minute} ${amPm}`, // Store the display format
+                        nestType,
+                        description,
+                        players: [...currentPlayers]
+                    };
+                }
+            });
+
+            if (formValues) {
+                try {
+                    const raidData = {
+                        raidName: 'SDN',
+                        ...formValues,
+                        createdDate: new Date().toISOString()
+                    };
+                    
+                    await db.addRaid(raidData);
+                    Swal.fire('Success!', 'Raid scheduled successfully!', 'success');
+                    loadTeams();
+                } catch (error) {
+                    console.error('Error saving raid:', error);
+                    Swal.fire('Error', 'Failed to schedule raid. Please try again.', 'error');
+                }
+            }
+        }
+
+        function addPlayerToSchedule() {
+            const name = document.getElementById('playerName').value;
+            const playerClass = document.getElementById('playerClass').value;
+            const suffix = document.getElementById('playerSuffix').value;
+            
+            if (!name) {
+                Swal.showValidationMessage('Please enter player name');
+                return;
+            }
+            
+            currentPlayers.push({ name, class: playerClass, suffix });
+            updateSchedulePlayerList();
+            
+            // Clear inputs
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerSuffix').value = '';
+        }
+
+        function updateSchedulePlayerList() {
+            const playerList = document.getElementById('schedulePlayerList');
+            if (!playerList) return;
+            
+            playerList.innerHTML = currentPlayers.map((player, index) => `
+                <div class="player-card">
+                    <span class="remove-player" onclick="removePlayerFromSchedule(${index})">×</span>
+                    <div><strong>${player.name}</strong></div>
+                    <div>${player.class}</div>
+                    <div>${player.suffix}</div>
+                </div>
+            `).join('');
+        }
+
+        function removePlayerFromSchedule(index) {
+            currentPlayers.splice(index, 1);
+            updateSchedulePlayerList();
+        }
     </script>
 </body>
 </html>
