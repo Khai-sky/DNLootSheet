@@ -818,10 +818,24 @@
                     return;
                 }
 
+                // Filter out full raids
+                const availableRaids = raids.filter(raid => {
+                    const slotCount = getSlotCount(raid.nestType);
+                    return !raid.players || raid.players.length < slotCount;
+                });
+
+                if (availableRaids.length === 0) {
+                    Swal.fire('No Available Raids', 'All raids are currently full.', 'info');
+                    return;
+                }
+
                 // Create HTML for raid selection
-                const raidOptions = raids.map(raid => 
-                    `<option value="${raid.id}">${raid.teamName} - ${raid.nestType} (${raid.day}, ${raid.time})</option>`
-                ).join('');
+                const raidOptions = availableRaids.map(raid => {
+                    const slotCount = getSlotCount(raid.nestType);
+                    const currentPlayers = raid.players ? raid.players.length : 0;
+                    const remainingSlots = slotCount - currentPlayers;
+                    return `<option value="${raid.id}">${raid.teamName} - ${raid.nestType} (${raid.day}, ${raid.time}) - ${remainingSlots} slots left</option>`;
+                }).join('');
 
                 const { value: formValues } = await Swal.fire({
                     title: 'Register for Raid',
@@ -899,6 +913,12 @@
                     if (!selectedRaid.players) {
                         selectedRaid.players = [];
                     }
+
+                    // Check if raid is full
+                    const slotCount = getSlotCount(selectedRaid.nestType);
+                    if (selectedRaid.players.length >= slotCount) {
+                        throw new Error('This raid is now full');
+                    }
                     
                     // Create registration data
                     const registrationData = {
@@ -929,7 +949,7 @@
                 }
             } catch (error) {
                 console.error('Error in registration:', error);
-                Swal.fire('Error', 'Failed to register for the raid. Please try again.', 'error');
+                Swal.fire('Error', error.message || 'Failed to register for the raid. Please try again.', 'error');
             }
         }
 
