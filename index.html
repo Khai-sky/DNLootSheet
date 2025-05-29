@@ -231,6 +231,7 @@
             display: none;
         }
     </style>
+    <script src="js/db.js"></script>
 </head>
 <body>
     <div id="loginOverlay" class="login-overlay">
@@ -240,7 +241,6 @@
             <input type="password" id="passwordInput" class="login-input" placeholder="Enter password">
             <button onclick="checkPassword()" class="login-button">Login</button>
             <div id="errorMessage" class="error-message">Incorrect password</div>
-            <a href="register.html" class="login-button" style="text-decoration: none; margin-top: 10px; display: inline-block;">Register To Raid</a>
         </div>
     </div>
 
@@ -253,6 +253,7 @@
             <div class="tabs">
                 <button class="tab-button active" onclick="openTab('teams')">Teams</button>
                 <button class="tab-button" onclick="openTab('scheduler')">Scheduler</button>
+                <button class="tab-button" onclick="openTab('register')">Register to Raid</button>
             </div>
             
             <div id="teams" class="tab-content active">
@@ -362,31 +363,94 @@
                     <button class="btn" style="margin-top: 20px;" onclick="saveRaid()">Save Raid</button>
                 </div>
             </div>
+
+            <div id="register" class="tab-content">
+                <h2>Register for Raid</h2>
+                <div class="scheduler-form">
+                    <div class="form-group">
+                        <label for="regIgn">In-Game Name (IGN):</label>
+                        <input type="text" id="regIgn" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regClass">Class:</label>
+                        <select id="regClass" required>
+                            <option value="">Select your class</option>
+                            <option value="Paladin">Paladin</option>
+                            <option value="Priest">Priest</option>
+                            <option value="Mercenary">Mercenary</option>
+                            <option value="Acrobat">Acrobat</option>
+                            <option value="Moonlord">Moonlord</option>
+                            <option value="Artillery">Artillery</option>
+                            <option value="Force User">Force User</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regMainSuffix">Main Weapon Suffix:</label>
+                        <input type="text" id="regMainSuffix" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regSecondarySuffix">Secondary Weapon Suffix:</label>
+                        <input type="text" id="regSecondarySuffix" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regNest">Nest Option:</label>
+                        <select id="regNest" required>
+                            <option value="">Select nest</option>
+                            <option value="Apocalypse">Apocalypse</option>
+                            <option value="Manticore">Manticore</option>
+                            <option value="Apocalypse Hell">Apocalypse Hell</option>
+                            <option value="Manticore Hell">Manticore Hell</option>
+                            <option value="Sea Dragon Outskirt">Sea Dragon Outskirt</option>
+                            <option value="Sea Dragon Core">Sea Dragon Core</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regRaidTime">Raid Time:</label>
+                        <input type="time" id="regRaidTime" min="19:00" max="23:00" required>
+                    </div>
+                    
+                    <button onclick="handleRegistration()" class="btn">Register for Raid</button>
+                    
+                    <div id="regErrorMessage" class="error-message"></div>
+                    <div id="regSuccessMessage" class="success-message"></div>
+                </div>
+            </div>
         </div>
     </div>
     
     <script>
         // Check for existing authentication on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const isAuthenticated = localStorage.getItem('isAuthenticated');
-            if (isAuthenticated === 'true') {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const isAuthenticated = await db.getAuth();
+                if (isAuthenticated) {
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error checking authentication:', error);
             }
         });
 
         // Password check function
-        function checkPassword() {
+        async function checkPassword() {
             const password = document.getElementById('passwordInput').value;
             const correctPassword = 'HestiaNo1Fans';
             
             if (password === correctPassword) {
-                // Set authentication in localStorage
-                localStorage.setItem('isAuthenticated', 'true');
-                
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                document.getElementById('errorMessage').style.display = 'none';
+                try {
+                    await db.setAuth(true);
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                } catch (error) {
+                    console.error('Error setting authentication:', error);
+                }
             } else {
                 document.getElementById('errorMessage').style.display = 'block';
                 document.getElementById('passwordInput').value = '';
@@ -464,14 +528,8 @@
             });
         }
         
-        // Function to load registrations
-        function loadRegistrations() {
-            const registrations = JSON.parse(localStorage.getItem('raidRegistrations')) || [];
-            return registrations;
-        }
-
         // Function to save raid data
-        function saveRaid() {
+        async function saveRaid() {
             const raidName = document.getElementById('raidName').value;
             const teamName = document.getElementById('teamName').value;
             const time = document.getElementById('raidTime').value;
@@ -482,7 +540,6 @@
             }
             
             const raidData = {
-                id: Date.now(),
                 raidName,
                 teamName,
                 players: currentPlayers,
@@ -490,22 +547,80 @@
                 createdDate: new Date().toISOString()
             };
             
-            // Get existing raids from localStorage
-            let raids = JSON.parse(localStorage.getItem('raids')) || [];
+            try {
+                await db.addRaid(raidData);
+                alert('Raid saved successfully!');
+                
+                // Reset form
+                document.getElementById('teamName').value = '';
+                document.getElementById('raidTime').value = '';
+                currentPlayers = [];
+                updatePlayerList();
+            } catch (error) {
+                console.error('Error saving raid:', error);
+                alert('Error saving raid. Please try again.');
+            }
+        }
+
+        async function handleRegistration() {
+            const ign = document.getElementById('regIgn').value;
+            const playerClass = document.getElementById('regClass').value;
+            const mainSuffix = document.getElementById('regMainSuffix').value;
+            const secondarySuffix = document.getElementById('regSecondarySuffix').value;
+            const nest = document.getElementById('regNest').value;
+            const raidTime = document.getElementById('regRaidTime').value;
             
-            // Add new raid
-            raids.push(raidData);
+            if (!ign || !playerClass || !mainSuffix || !secondarySuffix || !nest || !raidTime) {
+                document.getElementById('regErrorMessage').textContent = 'Please fill in all fields';
+                document.getElementById('regErrorMessage').style.display = 'block';
+                document.getElementById('regSuccessMessage').style.display = 'none';
+                return;
+            }
             
-            // Save back to localStorage
-            localStorage.setItem('raids', JSON.stringify(raids));
+            // Convert time to 24-hour format for comparison
+            const [hours, minutes] = raidTime.split(':').map(Number);
+            const timeInMinutes = hours * 60 + minutes;
+            const minTimeInMinutes = 19 * 60; // 7 PM
+            const maxTimeInMinutes = 23 * 60; // 11 PM
             
-            alert('Raid saved successfully!');
+            if (timeInMinutes < minTimeInMinutes || timeInMinutes > maxTimeInMinutes) {
+                document.getElementById('regErrorMessage').textContent = 'Raid time must be between 7:00 PM and 11:00 PM';
+                document.getElementById('regErrorMessage').style.display = 'block';
+                document.getElementById('regSuccessMessage').style.display = 'none';
+                return;
+            }
             
-            // Reset form
-            document.getElementById('teamName').value = '';
-            document.getElementById('raidTime').value = '';
-            currentPlayers = [];
-            updatePlayerList();
+            const registrationData = {
+                ign,
+                class: playerClass,
+                mainSuffix,
+                secondarySuffix,
+                nest,
+                raidTime,
+                registrationDate: new Date().toISOString()
+            };
+            
+            try {
+                await db.addRegistration(registrationData);
+                
+                // Show success message
+                document.getElementById('regSuccessMessage').textContent = 'Registration successful!';
+                document.getElementById('regSuccessMessage').style.display = 'block';
+                document.getElementById('regErrorMessage').style.display = 'none';
+                
+                // Reset form
+                document.getElementById('regIgn').value = '';
+                document.getElementById('regClass').value = '';
+                document.getElementById('regMainSuffix').value = '';
+                document.getElementById('regSecondarySuffix').value = '';
+                document.getElementById('regNest').value = '';
+                document.getElementById('regRaidTime').value = '';
+            } catch (error) {
+                console.error('Error saving registration:', error);
+                document.getElementById('regErrorMessage').textContent = 'Error saving registration. Please try again.';
+                document.getElementById('regErrorMessage').style.display = 'block';
+                document.getElementById('regSuccessMessage').style.display = 'none';
+            }
         }
     </script>
 </body>
