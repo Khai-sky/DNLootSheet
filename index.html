@@ -230,6 +230,65 @@
         .main-content {
             display: none;
         }
+
+        .raid-tabs-container {
+            margin-top: 30px;
+        }
+        
+        .raid-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0d47a1;
+            padding-bottom: 5px;
+        }
+        
+        .raid-tab {
+            background-color: #1b263b;
+            border: none;
+            color: #e0e1dd;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .raid-tab:hover {
+            background-color: #2c3e50;
+        }
+        
+        .raid-tab.active {
+            background-color: #0d47a1;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .raid-content {
+            display: none;
+            background-color: #1b263b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .raid-content.active {
+            display: block;
+        }
+        
+        .raid-info {
+            margin-bottom: 20px;
+        }
+        
+        .raid-info p {
+            margin: 5px 0;
+            color: #e0e1dd;
+        }
+        
+        .raid-info strong {
+            color: #90caf9;
+        }
     </style>
     <script src="js/db.js"></script>
 </head>
@@ -332,7 +391,7 @@
                     
                     <div class="form-group">
                         <label for="teamName">Team Name:</label>
-                        <input type="text" id="teamName" placeholder="Enter team name">
+                        <input type="text" id="teamName" placeholder="Enter team name (e.g., K1, K2)">
                     </div>
                     
                     <div class="form-group">
@@ -361,6 +420,15 @@
                     <div id="playerList" class="player-list"></div>
                     
                     <button class="btn" style="margin-top: 20px;" onclick="saveRaid()">Save Raid</button>
+                </div>
+
+                <div class="raid-tabs-container">
+                    <div class="raid-tabs" id="raidTabs">
+                        <!-- Dynamic raid tabs will be added here -->
+                    </div>
+                    <div id="raidContents">
+                        <!-- Dynamic raid contents will be added here -->
+                    </div>
                 </div>
             </div>
 
@@ -528,7 +596,86 @@
             });
         }
         
-        // Function to save raid data
+        // Function to load and display raids
+        async function loadRaids() {
+            try {
+                const raids = await db.getRaids();
+                const raidTabs = document.getElementById('raidTabs');
+                const raidContents = document.getElementById('raidContents');
+                
+                // Clear existing content
+                raidTabs.innerHTML = '';
+                raidContents.innerHTML = '';
+                
+                if (raids.length === 0) {
+                    raidContents.innerHTML = '<p style="text-align: center; color: #e0e1dd;">No raids scheduled yet.</p>';
+                    return;
+                }
+                
+                // Create tabs and content for each raid
+                raids.forEach((raid, index) => {
+                    // Create tab button
+                    const tabButton = document.createElement('button');
+                    tabButton.className = `raid-tab ${index === 0 ? 'active' : ''}`;
+                    tabButton.textContent = raid.teamName;
+                    tabButton.onclick = () => openRaidTab(index);
+                    raidTabs.appendChild(tabButton);
+                    
+                    // Create raid content
+                    const raidContent = document.createElement('div');
+                    raidContent.className = `raid-content ${index === 0 ? 'active' : ''}`;
+                    raidContent.innerHTML = `
+                        <div class="raid-info">
+                            <p><strong>Team Name:</strong> ${raid.teamName}</p>
+                            <p><strong>Raid Time:</strong> ${raid.time}</p>
+                            <p><strong>Players:</strong></p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Suffix</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${raid.players.map(player => `
+                                        <tr>
+                                            <td>${player.name}</td>
+                                            <td>${player.class}</td>
+                                            <td>${player.suffix}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    raidContents.appendChild(raidContent);
+                });
+            } catch (error) {
+                console.error('Error loading raids:', error);
+            }
+        }
+
+        function openRaidTab(index) {
+            // Update tab buttons
+            const tabs = document.getElementsByClassName('raid-tab');
+            for (let tab of tabs) {
+                tab.classList.remove('active');
+            }
+            tabs[index].classList.add('active');
+            
+            // Update content
+            const contents = document.getElementsByClassName('raid-content');
+            for (let content of contents) {
+                content.classList.remove('active');
+            }
+            contents[index].classList.add('active');
+        }
+
+        // Load raids when scheduler tab is opened
+        document.querySelector('button[onclick="openTab(\'scheduler\')"]').addEventListener('click', loadRaids);
+
+        // Modify saveRaid function to reload raids after saving
         async function saveRaid() {
             const raidName = document.getElementById('raidName').value;
             const teamName = document.getElementById('teamName').value;
@@ -556,6 +703,9 @@
                 document.getElementById('raidTime').value = '';
                 currentPlayers = [];
                 updatePlayerList();
+                
+                // Reload raids to show the new one
+                loadRaids();
             } catch (error) {
                 console.error('Error saving raid:', error);
                 alert('Error saving raid. Please try again.');
