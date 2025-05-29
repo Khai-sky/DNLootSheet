@@ -1,0 +1,51 @@
+{
+    "raids": [
+        {
+            "raidName": "SDN",
+            "teamName": "Core Team",
+            "players": [
+                {
+                    "name": "Ymint",
+                    "class": "Paladin",
+                    "suffix": "int, int"
+                },
+                {
+                    "name": "Meg",
+                    "class": "Priest",
+                    "suffix": "magic, magic"
+                },
+                {
+                    "name": "Tangyee",
+                    "class": "Priest",
+                    "suffix": "pending"
+                },
+                {
+                    "name": "Solar",
+                    "class": "Mercenary",
+                    "suffix": "wind, iw"
+                },
+                {
+                    "name": "lyn",
+                    "class": "Acrobat",
+                    "suffix": "wind, iw"
+                },
+                {
+                    "name": "bjl",
+                    "class": "Moonlord",
+                    "suffix": ""
+                },
+                {
+                    "name": "Mino",
+                    "class": "Artillery",
+                    "suffix": "magic, tent"
+                },
+                {
+                    "name": "Juddy",
+                    "class": "Force User",
+                    "suffix": "1 int andy"
+                }
+            ],
+            "time": "22:00-01:00"
+        }
+    ]
+} 

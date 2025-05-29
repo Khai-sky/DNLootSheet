@@ -108,6 +108,67 @@
             color: #ff9800;
             font-weight: bold;
         }
+        
+        /* Scheduler styles */
+        .scheduler-form {
+            background-color: #1b263b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #e0e1dd;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #415a77;
+            border-radius: 4px;
+            background-color: #0d1b2a;
+            color: #e0e1dd;
+        }
+        
+        .player-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .player-card {
+            background-color: #141f33;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #415a77;
+        }
+        
+        .btn {
+            background-color: #0d47a1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #1565c0;
+        }
+        
+        .remove-player {
+            color: #ff5252;
+            cursor: pointer;
+            float: right;
+        }
     </style>
 </head>
 <body>
@@ -119,6 +180,7 @@
         <div class="tabs">
             <button class="tab-button active" onclick="openTab('teams')">Teams</button>
             <button class="tab-button" onclick="openTab('loots')">Loots</button>
+            <button class="tab-button" onclick="openTab('scheduler')">Scheduler</button>
         </div>
         
         <div id="teams" class="tab-content active">
@@ -268,6 +330,49 @@
                 </tbody>
             </table>
         </div>
+        
+        <div id="scheduler" class="tab-content">
+            <h2>Raid Scheduler</h2>
+            
+            <div class="scheduler-form">
+                <div class="form-group">
+                    <label for="raidName">Raid Name:</label>
+                    <input type="text" id="raidName" value="SDN" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="teamName">Team Name:</label>
+                    <input type="text" id="teamName" placeholder="Enter team name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="raidTime">Raid Time:</label>
+                    <input type="text" id="raidTime" placeholder="e.g., 22:00-01:00">
+                </div>
+                
+                <div class="form-group">
+                    <label>Add Player:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="playerName" placeholder="Player name">
+                        <select id="playerClass">
+                            <option value="Paladin">Paladin</option>
+                            <option value="Priest">Priest</option>
+                            <option value="Mercenary">Mercenary</option>
+                            <option value="Acrobat">Acrobat</option>
+                            <option value="Moonlord">Moonlord</option>
+                            <option value="Artillery">Artillery</option>
+                            <option value="Force User">Force User</option>
+                        </select>
+                        <input type="text" id="playerSuffix" placeholder="Suffix">
+                        <button class="btn" onclick="addPlayer()">Add Player</button>
+                    </div>
+                </div>
+                
+                <div id="playerList" class="player-list"></div>
+                
+                <button class="btn" style="margin-top: 20px;" onclick="saveRaid()">Save Raid</button>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -286,6 +391,81 @@
             
             document.getElementById(tabName).classList.add("active");
             event.currentTarget.classList.add("active");
+        }
+        
+        let currentPlayers = [];
+        
+        function addPlayer() {
+            if (currentPlayers.length >= 8) {
+                alert('Maximum 8 players allowed!');
+                return;
+            }
+            
+            const name = document.getElementById('playerName').value;
+            const playerClass = document.getElementById('playerClass').value;
+            const suffix = document.getElementById('playerSuffix').value;
+            
+            if (!name) {
+                alert('Please enter player name!');
+                return;
+            }
+            
+            currentPlayers.push({ name, class: playerClass, suffix });
+            updatePlayerList();
+            
+            // Clear inputs
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerSuffix').value = '';
+        }
+        
+        function removePlayer(index) {
+            currentPlayers.splice(index, 1);
+            updatePlayerList();
+        }
+        
+        function updatePlayerList() {
+            const playerList = document.getElementById('playerList');
+            playerList.innerHTML = '';
+            
+            currentPlayers.forEach((player, index) => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                playerCard.innerHTML = `
+                    <span class="remove-player" onclick="removePlayer(${index})">×</span>
+                    <div><strong>${player.name}</strong></div>
+                    <div>${player.class}</div>
+                    <div>${player.suffix}</div>
+                `;
+                playerList.appendChild(playerCard);
+            });
+        }
+        
+        function saveRaid() {
+            const raidName = document.getElementById('raidName').value;
+            const teamName = document.getElementById('teamName').value;
+            const time = document.getElementById('raidTime').value;
+            
+            if (!teamName || !time || currentPlayers.length === 0) {
+                alert('Please fill in all fields and add at least one player!');
+                return;
+            }
+            
+            const raidData = {
+                raidName,
+                teamName,
+                players: currentPlayers,
+                time
+            };
+            
+            // In a real application, this would be an API call to save the data
+            console.log('Saving raid:', raidData);
+            alert('Raid saved successfully!');
+            
+            // Reset form
+            document.getElementById('teamName').value = '';
+            document.getElementById('raidTime').value = '';
+            currentPlayers = [];
+            updatePlayerList();
         }
     </script>
 </body>
