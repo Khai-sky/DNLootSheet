@@ -622,12 +622,36 @@
             // You can add visual feedback about the slot count if needed
         }
 
-        // Function to load and display teams
+        // Add variable to track active tab
+        let activeTabIndex = 0;
+
+        // Modify openTeamTab function
+        function openTeamTab(index) {
+            activeTabIndex = index;
+            // Update tab buttons
+            const tabs = document.getElementsByClassName('team-tab');
+            for (let tab of tabs) {
+                tab.classList.remove('active');
+            }
+            tabs[index].classList.add('active');
+            
+            // Update content
+            const contents = document.getElementsByClassName('team-content');
+            for (let content of contents) {
+                content.classList.remove('active');
+            }
+            contents[index].classList.add('active');
+        }
+
+        // Modify loadTeams function
         async function loadTeams() {
             try {
                 const raids = await db.getRaids();
                 const teamTabs = document.getElementById('teamTabs');
                 const teamContents = document.getElementById('teamContents');
+                
+                // Store current scroll position
+                const scrollPosition = window.scrollY;
                 
                 // Clear existing content
                 teamTabs.innerHTML = '';
@@ -642,14 +666,14 @@
                 raids.forEach((raid, index) => {
                     // Create tab button
                     const tabButton = document.createElement('button');
-                    tabButton.className = `team-tab ${index === 0 ? 'active' : ''}`;
+                    tabButton.className = `team-tab ${index === activeTabIndex ? 'active' : ''}`;
                     tabButton.textContent = `${raid.teamName} - ${raid.nestType}`;
                     tabButton.onclick = () => openTeamTab(index);
                     teamTabs.appendChild(tabButton);
                     
                     // Create team content
                     const teamContent = document.createElement('div');
-                    teamContent.className = `team-content ${index === 0 ? 'active' : ''}`;
+                    teamContent.className = `team-content ${index === activeTabIndex ? 'active' : ''}`;
                     
                     // Get slot count based on nest type
                     const slotCount = getSlotCount(raid.nestType);
@@ -700,29 +724,13 @@
                     `;
                     teamContents.appendChild(teamContent);
                 });
+
+                // Restore scroll position
+                window.scrollTo(0, scrollPosition);
             } catch (error) {
                 console.error('Error loading teams:', error);
             }
         }
-
-        function openTeamTab(index) {
-            // Update tab buttons
-            const tabs = document.getElementsByClassName('team-tab');
-            for (let tab of tabs) {
-                tab.classList.remove('active');
-            }
-            tabs[index].classList.add('active');
-            
-            // Update content
-            const contents = document.getElementsByClassName('team-content');
-            for (let content of contents) {
-                content.classList.remove('active');
-            }
-            contents[index].classList.add('active');
-        }
-
-        // Load teams when page loads
-        document.addEventListener('DOMContentLoaded', loadTeams);
 
         // Modify saveRaid function to include description
         async function saveRaid() {
@@ -887,8 +895,8 @@
             }
         }
 
-        // Set up real-time updates
-        setInterval(loadTeams, 5000); // Refresh every 5 seconds
+        // Modify setInterval to use a longer interval
+        setInterval(loadTeams, 10000); // Refresh every 10 seconds instead of 5
 
         async function showScheduleForm() {
             const { value: formValues } = await Swal.fire({

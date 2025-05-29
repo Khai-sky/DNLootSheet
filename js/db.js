@@ -111,6 +111,22 @@ class Database {
             request.onerror = () => reject(request.error);
         });
     }
+
+    async deleteRaid(raidId) {
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction(['raids'], 'readwrite');
+            const store = transaction.objectStore('raids');
+            const request = store.delete(parseInt(raidId));
+
+            request.onsuccess = () => {
+                resolve();
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+        });
+    }
 }
 
 // Create a global instance
