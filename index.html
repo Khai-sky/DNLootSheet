@@ -231,6 +231,26 @@
             display: none;
         }
 
+        .admin-controls {
+            display: none;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
         .raid-tabs-container {
             margin-top: 30px;
         }
@@ -441,6 +461,10 @@
             <button class="btn btn-primary" onclick="showRegistrationForm()">Register to Raid</button>
         </div>
 
+        <div class="admin-controls" id="adminControls">
+            <button class="delete-btn" onclick="showDeleteConfirmation()">Delete Raid</button>
+        </div>
+
         <div class="container">
             <h1>Sea Dragon Team (SDN)</h1>
             
@@ -463,6 +487,9 @@
     </div>
     
     <script>
+        // Add isAdmin variable
+        let isAdmin = false;
+
         // Check for existing authentication on page load
         document.addEventListener('DOMContentLoaded', async function() {
             try {
@@ -476,17 +503,24 @@
             }
         });
 
-        // Password check function
+        // Modify checkPassword function
         async function checkPassword() {
             const password = document.getElementById('passwordInput').value;
             const correctPassword = 'HestiaNo1Fans';
+            const adminPassword = 'AdminMinohehe';
             
-            if (password === correctPassword) {
+            if (password === correctPassword || password === adminPassword) {
                 try {
                     await db.setAuth(true);
                     document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('mainContent').style.display = 'block';
                     document.getElementById('errorMessage').style.display = 'none';
+                    
+                    // Show admin controls if admin password was used
+                    if (password === adminPassword) {
+                        isAdmin = true;
+                        document.getElementById('adminControls').style.display = 'block';
+                    }
                 } catch (error) {
                     console.error('Error setting authentication:', error);
                 }
@@ -1056,6 +1090,70 @@
         function removePlayerFromSchedule(index) {
             currentPlayers.splice(index, 1);
             updateSchedulePlayerList();
+        }
+
+        // Add delete confirmation function
+        async function showDeleteConfirmation() {
+            if (!isAdmin) return;
+
+            try {
+                const raids = await db.getRaids();
+                if (raids.length === 0) {
+                    Swal.fire('No Raids', 'There are no raids to delete.', 'info');
+                    return;
+                }
+
+                const raidOptions = raids.map(raid => 
+                    `<option value="${raid.id}">${raid.teamName} - ${raid.nestType} (${raid.day}, ${raid.time})</option>`
+                ).join('');
+
+                const { value: raidId } = await Swal.fire({
+                    title: 'Delete Raid',
+                    html: `
+                        <div class="form-group">
+                            <label for="raidToDelete">Select Raid to Delete:</label>
+                            <select id="raidToDelete" class="swal2-input">
+                                <option value="">Select a raid</option>
+                                ${raidOptions}
+                            </select>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Delete',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#dc3545',
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        const selectedRaid = document.getElementById('raidToDelete').value;
+                        if (!selectedRaid) {
+                            Swal.showValidationMessage('Please select a raid to delete');
+                            return false;
+                        }
+                        return selectedRaid;
+                    }
+                });
+
+                if (raidId) {
+                    const result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This action cannot be undone!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, delete it!'
+                    });
+
+                    if (result.isConfirmed) {
+                        await db.deleteRaid(raidId);
+                        Swal.fire('Deleted!', 'The raid has been deleted.', 'success');
+                        loadTeams();
+                    }
+                }
+            } catch (error) {
+                console.error('Error in delete process:', error);
+                Swal.fire('Error', 'Failed to delete raid. Please try again.', 'error');
+            }
         }
     </script>
 </body>
