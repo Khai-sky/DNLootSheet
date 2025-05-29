@@ -966,49 +966,12 @@
                         <input id="teamName" class="swal2-input" placeholder="Enter team name (e.g., K1, K2)">
                     </div>
                     <div class="form-group">
-                        <label for="raidDay">Raid Day:</label>
-                        <select id="raidDay" class="swal2-input">
-                            <option value="">Select day</option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                            <option value="Sunday">Sunday</option>
-                        </select>
+                        <label for="raidDate">Raid Date:</label>
+                        <input type="date" id="raidDate" class="swal2-input" min="${new Date().toISOString().split('T')[0]}">
                     </div>
                     <div class="form-group">
                         <label for="raidTime">Raid Time:</label>
-                        <div style="display: flex; gap: 10px;">
-                            <select id="raidHour" class="swal2-input" style="width: 80px;">
-                                <option value="">Hour</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                                <option value="11">11</option>
-                                <option value="12">12</option>
-                            </select>
-                            <select id="raidMinute" class="swal2-input" style="width: 80px;">
-                                <option value="">Min</option>
-                                <option value="00">00</option>
-                                <option value="15">15</option>
-                                <option value="30">30</option>
-                                <option value="45">45</option>
-                            </select>
-                            <select id="raidAmPm" class="swal2-input" style="width: 80px;">
-                                <option value="">AM/PM</option>
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-                            </select>
-                        </div>
+                        <input type="time" id="raidTime" class="swal2-input">
                     </div>
                     <div class="form-group">
                         <label for="nestType">Nest Type:</label>
@@ -1070,33 +1033,26 @@
                 },
                 preConfirm: () => {
                     const teamName = document.getElementById('teamName').value;
-                    const day = document.getElementById('raidDay').value;
-                    const hour = document.getElementById('raidHour').value;
-                    const minute = document.getElementById('raidMinute').value;
-                    const amPm = document.getElementById('raidAmPm').value;
+                    const raidDate = document.getElementById('raidDate').value;
+                    const raidTime = document.getElementById('raidTime').value;
                     const nestType = document.getElementById('nestType').value;
                     const description = document.getElementById('raidDescription').value;
                     
-                    if (!teamName || !day || !hour || !minute || !amPm || !nestType || currentPlayers.length === 0) {
+                    if (!teamName || !raidDate || !raidTime || !nestType || currentPlayers.length === 0) {
                         Swal.showValidationMessage('Please fill in all required fields and add at least one player');
                         return false;
                     }
-                    
-                    // Convert to 24-hour format for storage
-                    let hour24 = parseInt(hour);
-                    if (amPm === 'PM' && hour24 !== 12) {
-                        hour24 += 12;
-                    } else if (amPm === 'AM' && hour24 === 12) {
-                        hour24 = 0;
-                    }
-                    
-                    const time = `${hour24.toString().padStart(2, '0')}:${minute}`;
+
+                    // Convert date to day name
+                    const date = new Date(raidDate);
+                    const day = date.toLocaleDateString('en-US', { weekday: 'long' });
                     
                     return {
                         teamName,
                         day,
-                        time,
-                        displayTime: `${hour}:${minute} ${amPm}`, // Store the display format
+                        date: raidDate,
+                        time: raidTime,
+                        displayTime: new Date(`${raidDate}T${raidTime}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
                         nestType,
                         description,
                         players: [...currentPlayers]

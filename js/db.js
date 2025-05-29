@@ -72,7 +72,18 @@ class Database {
             const transaction = this.db.transaction(['raids'], 'readwrite');
             const store = transaction.objectStore('raids');
             const request = store.add(raid);
+            
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
 
+    async updateRaid(raid) {
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction(['raids'], 'readwrite');
+            const store = transaction.objectStore('raids');
+            const request = store.put(raid);
+            
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
