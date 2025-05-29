@@ -864,12 +864,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="regMainSuffix">Main Weapon Suffix:</label>
-                            <input id="regMainSuffix" class="swal2-input" placeholder="Enter main weapon suffix">
-                        </div>
-                        <div class="form-group">
-                            <label for="regSecondarySuffix">Secondary Weapon Suffix:</label>
-                            <input id="regSecondarySuffix" class="swal2-input" placeholder="Enter secondary weapon suffix">
+                            <label for="regSuffix">Suffix:</label>
+                            <input id="regSuffix" class="swal2-input" placeholder="Enter your suffix">
                         </div>
                     `,
                     focusConfirm: false,
@@ -880,15 +876,14 @@
                         const raidId = document.getElementById('selectedRaid').value;
                         const ign = document.getElementById('regIgn').value;
                         const playerClass = document.getElementById('regClass').value;
-                        const mainSuffix = document.getElementById('regMainSuffix').value;
-                        const secondarySuffix = document.getElementById('regSecondarySuffix').value;
+                        const suffix = document.getElementById('regSuffix').value;
                         
-                        if (!raidId || !ign || !playerClass || !mainSuffix || !secondarySuffix) {
+                        if (!raidId || !ign || !playerClass || !suffix) {
                             Swal.showValidationMessage('Please fill in all fields');
                             return false;
                         }
                         
-                        return { raidId, ign, playerClass, mainSuffix, secondarySuffix };
+                        return { raidId, ign, playerClass, suffix };
                     }
                 });
 
@@ -910,8 +905,7 @@
                         raidId: formValues.raidId,
                         ign: formValues.ign,
                         class: formValues.playerClass,
-                        mainSuffix: formValues.mainSuffix,
-                        secondarySuffix: formValues.secondarySuffix,
+                        suffix: formValues.suffix,
                         registrationDate: new Date().toISOString()
                     };
 
@@ -922,7 +916,7 @@
                     selectedRaid.players.push({
                         name: formValues.ign,
                         class: formValues.playerClass,
-                        suffix: `${formValues.mainSuffix}, ${formValues.secondarySuffix}`
+                        suffix: formValues.suffix
                     });
                     
                     // Update the raid in the database
