@@ -98,17 +98,70 @@
         .tab-content.active {
             display: block;
         }
-        
-        .status-sold {
-            color: #4caf50;
-            font-weight: bold;
+
+        /* Login Overlay */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(13, 27, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-        
-        .status-used {
-            color: #ff9800;
-            font-weight: bold;
+
+        .login-container {
+            background-color: #1b263b;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
         }
-        
+
+        .login-container h2 {
+            margin-top: 0;
+            color: #e0e1dd;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #415a77;
+            border-radius: 4px;
+            background-color: #0d1b2a;
+            color: #e0e1dd;
+            font-size: 16px;
+        }
+
+        .login-button {
+            background-color: #0d47a1;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .login-button:hover {
+            background-color: #1565c0;
+        }
+
+        .error-message {
+            color: #ff5252;
+            margin-top: 10px;
+            display: none;
+        }
+
         /* Scheduler styles */
         .scheduler-form {
             background-color: #1b263b;
@@ -169,213 +222,167 @@
             cursor: pointer;
             float: right;
         }
+
+        .main-content {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <img class="banner" src="https://i.pinimg.com/originals/3a/5f/a6/3a5fa66a0eb93df05cfc9c248995eb54.gif" alt="DanMachi Banner">
-    
-    <div class="container">
-        <h1>Sea Dragon Team (SDN)</h1>
-        
-        <div class="tabs">
-            <button class="tab-button active" onclick="openTab('teams')">Teams</button>
-            <button class="tab-button" onclick="openTab('loots')">Loots</button>
-            <button class="tab-button" onclick="openTab('scheduler')">Scheduler</button>
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <img class="banner" src="https://i.pinimg.com/originals/3a/5f/a6/3a5fa66a0eb93df05cfc9c248995eb54.gif" alt="DanMachi Banner">
+            <h2>Enter Password</h2>
+            <input type="password" id="passwordInput" class="login-input" placeholder="Enter password">
+            <button onclick="checkPassword()" class="login-button">Login</button>
+            <div id="errorMessage" class="error-message">Incorrect password</div>
         </div>
+    </div>
+
+    <div id="mainContent" class="main-content">
+        <img class="banner" src="https://i.pinimg.com/originals/3a/5f/a6/3a5fa66a0eb93df05cfc9c248995eb54.gif" alt="DanMachi Banner">
         
-        <div id="teams" class="tab-content active">
-            <h2>Core Team - Reset Run (10pm-1am)</h2>
+        <div class="container">
+            <h1>Sea Dragon Team (SDN)</h1>
             
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Class</th>
-                        <th>Name</th>
-                        <th>Suffix</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Paladin</td>
-                        <td>Ymint</td>
-                        <td>int, int</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Priest</td>
-                        <td class="baseball">Meg</td>
-                        <td>magic, magic</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Priest</td>
-                        <td>Tangyee</td>
-                        <td>pending</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Mercenary</td>
-                        <td>Solar</td>
-                        <td>wind, iw</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Acrobat</td>
-                        <td class="baseball">lyn</td>
-                        <td>wind, iw</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Moonlord</td>
-                        <td>bjl</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Artillery</td>
-                        <td class="baseball">Mino</td>
-                        <td>magic, tent</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Force User</td>
-                        <td class="baseball">Juddy</td>
-                        <td>1 int andy</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div id="loots" class="tab-content">
-            <h2>Team Loots Distribution</h2>
+            <div class="tabs">
+                <button class="tab-button active" onclick="openTab('teams')">Teams</button>
+                <button class="tab-button" onclick="openTab('scheduler')">Scheduler</button>
+            </div>
             
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Class</th>
-                        <th>Name</th>
-                        <th>Loot</th>
-                        <th>Status</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Paladin</td>
-                        <td>Ymint</td>
-                        <td>Archangel Sword</td>
-                        <td class="status-used">Used</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Priest</td>
-                        <td class="baseball">Meg</td>
-                        <td>Vitality Gem</td>
-                        <td class="status-sold">Sold</td>
-                        <td>3500g</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Priest</td>
-                        <td>Tangyee</td>
-                        <td>Mana Crystal</td>
-                        <td class="status-used">Used</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Mercenary</td>
-                        <td>Solar</td>
-                        <td>Wind Gloves</td>
-                        <td class="status-used">Used</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Acrobat</td>
-                        <td class="baseball">lyn</td>
-                        <td>Agility Pendant</td>
-                        <td class="status-sold">Sold</td>
-                        <td>4200g</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Moonlord</td>
-                        <td>bjl</td>
-                        <td>Luna Crystal</td>
-                        <td class="status-sold">Sold</td>
-                        <td>2800g</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Artillery</td>
-                        <td class="baseball">Mino</td>
-                        <td>Magic Enhancer</td>
-                        <td class="status-used">Used</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Force User</td>
-                        <td class="baseball">Juddy</td>
-                        <td>Force Crystal</td>
-                        <td class="status-sold">Sold</td>
-                        <td>5000g</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div id="scheduler" class="tab-content">
-            <h2>Raid Scheduler</h2>
+            <div id="teams" class="tab-content active">
+                <h2>Core Team - Reset Run (10pm-1am)</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Class</th>
+                            <th>Name</th>
+                            <th>Suffix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Paladin</td>
+                            <td>Ymint</td>
+                            <td>int, int</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Priest</td>
+                            <td class="baseball">Meg</td>
+                            <td>magic, magic</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Priest</td>
+                            <td>Tangyee</td>
+                            <td>pending</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Mercenary</td>
+                            <td>Solar</td>
+                            <td>wind, iw</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Acrobat</td>
+                            <td class="baseball">lyn</td>
+                            <td>wind, iw</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Moonlord</td>
+                            <td>bjl</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Artillery</td>
+                            <td class="baseball">Mino</td>
+                            <td>magic, tent</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Force User</td>
+                            <td class="baseball">Juddy</td>
+                            <td>1 int andy</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             
-            <div class="scheduler-form">
-                <div class="form-group">
-                    <label for="raidName">Raid Name:</label>
-                    <input type="text" id="raidName" value="SDN" readonly>
-                </div>
+            <div id="scheduler" class="tab-content">
+                <h2>Raid Scheduler</h2>
                 
-                <div class="form-group">
-                    <label for="teamName">Team Name:</label>
-                    <input type="text" id="teamName" placeholder="Enter team name">
-                </div>
-                
-                <div class="form-group">
-                    <label for="raidTime">Raid Time:</label>
-                    <input type="text" id="raidTime" placeholder="e.g., 22:00-01:00">
-                </div>
-                
-                <div class="form-group">
-                    <label>Add Player:</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="playerName" placeholder="Player name">
-                        <select id="playerClass">
-                            <option value="Paladin">Paladin</option>
-                            <option value="Priest">Priest</option>
-                            <option value="Mercenary">Mercenary</option>
-                            <option value="Acrobat">Acrobat</option>
-                            <option value="Moonlord">Moonlord</option>
-                            <option value="Artillery">Artillery</option>
-                            <option value="Force User">Force User</option>
-                        </select>
-                        <input type="text" id="playerSuffix" placeholder="Suffix">
-                        <button class="btn" onclick="addPlayer()">Add Player</button>
+                <div class="scheduler-form">
+                    <div class="form-group">
+                        <label for="raidName">Raid Name:</label>
+                        <input type="text" id="raidName" value="SDN" readonly>
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="teamName">Team Name:</label>
+                        <input type="text" id="teamName" placeholder="Enter team name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="raidTime">Raid Time:</label>
+                        <input type="text" id="raidTime" placeholder="e.g., 22:00-01:00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Add Player:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="playerName" placeholder="Player name">
+                            <select id="playerClass">
+                                <option value="Paladin">Paladin</option>
+                                <option value="Priest">Priest</option>
+                                <option value="Mercenary">Mercenary</option>
+                                <option value="Acrobat">Acrobat</option>
+                                <option value="Moonlord">Moonlord</option>
+                                <option value="Artillery">Artillery</option>
+                                <option value="Force User">Force User</option>
+                            </select>
+                            <input type="text" id="playerSuffix" placeholder="Suffix">
+                            <button class="btn" onclick="addPlayer()">Add Player</button>
+                        </div>
+                    </div>
+                    
+                    <div id="playerList" class="player-list"></div>
+                    
+                    <button class="btn" style="margin-top: 20px;" onclick="saveRaid()">Save Raid</button>
                 </div>
-                
-                <div id="playerList" class="player-list"></div>
-                
-                <button class="btn" style="margin-top: 20px;" onclick="saveRaid()">Save Raid</button>
             </div>
         </div>
     </div>
     
     <script>
+        // Password check function
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const correctPassword = 'HestiaNo1Fans';
+            
+            if (password === correctPassword) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        // Handle Enter key in password input
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
         function openTab(tabName) {
             var i, tabContent, tabButtons;
             
