@@ -120,19 +120,23 @@
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
             width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
 
         .login-container h2 {
-            margin-top: 0;
+            margin: 0;
             color: #e0e1dd;
         }
 
         .login-input {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
+            margin: 0;
             border: 1px solid #415a77;
             border-radius: 4px;
             background-color: #0d1b2a;
@@ -148,7 +152,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 10px;
+            width: 100%;
             transition: background-color 0.3s;
         }
 
@@ -158,7 +162,7 @@
 
         .error-message {
             color: #ff5252;
-            margin-top: 10px;
+            margin: 0;
             display: none;
         }
 
@@ -362,12 +366,24 @@
     </div>
     
     <script>
+        // Check for existing authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const isAuthenticated = localStorage.getItem('isAuthenticated');
+            if (isAuthenticated === 'true') {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
+        });
+
         // Password check function
         function checkPassword() {
             const password = document.getElementById('passwordInput').value;
             const correctPassword = 'HestiaNo1Fans';
             
             if (password === correctPassword) {
+                // Set authentication in localStorage
+                localStorage.setItem('isAuthenticated', 'true');
+                
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 document.getElementById('errorMessage').style.display = 'none';
@@ -448,6 +464,13 @@
             });
         }
         
+        // Function to load registrations
+        function loadRegistrations() {
+            const registrations = JSON.parse(localStorage.getItem('raidRegistrations')) || [];
+            return registrations;
+        }
+
+        // Function to save raid data
         function saveRaid() {
             const raidName = document.getElementById('raidName').value;
             const teamName = document.getElementById('teamName').value;
@@ -459,14 +482,23 @@
             }
             
             const raidData = {
+                id: Date.now(),
                 raidName,
                 teamName,
                 players: currentPlayers,
-                time
+                time,
+                createdDate: new Date().toISOString()
             };
             
-            // In a real application, this would be an API call to save the data
-            console.log('Saving raid:', raidData);
+            // Get existing raids from localStorage
+            let raids = JSON.parse(localStorage.getItem('raids')) || [];
+            
+            // Add new raid
+            raids.push(raidData);
+            
+            // Save back to localStorage
+            localStorage.setItem('raids', JSON.stringify(raids));
+            
             alert('Raid saved successfully!');
             
             // Reset form

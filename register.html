@@ -178,16 +178,24 @@
             }
             
             const registrationData = {
+                id: Date.now(), // Unique ID for each registration
                 ign,
                 class: playerClass,
                 mainSuffix,
                 secondarySuffix,
                 nest,
-                raidTime
+                raidTime,
+                registrationDate: new Date().toISOString()
             };
             
-            // In a real application, this would be an API call to save the data
-            console.log('Registration data:', registrationData);
+            // Get existing registrations from localStorage
+            let registrations = JSON.parse(localStorage.getItem('raidRegistrations')) || [];
+            
+            // Add new registration
+            registrations.push(registrationData);
+            
+            // Save back to localStorage
+            localStorage.setItem('raidRegistrations', JSON.stringify(registrations));
             
             // Show success message
             document.getElementById('successMessage').textContent = 'Registration successful!';
