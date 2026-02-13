@@ -4,92 +4,61 @@
     <meta charset="UTF-8">
     <title>DN Gold vs Lavish Calculator</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; display: flex; justify-content: center; padding: 40px; }
-        .card { background: #1e1e1e; padding: 25px; border-radius: 15px; width: 450px; border: 1px solid #333; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-size: 0.9em; color: #aaa; }
-        input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
-        .result-box { background: #252525; padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #00ff88; }
-        .verdict { font-weight: bold; text-align: center; padding: 15px; margin-top: 20px; border-radius: 8px; }
-        .better { background: #1b4332; color: #74c69d; border: 1px solid #2d6a4f; }
-        .info { font-size: 0.8em; color: #777; margin-top: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; display: flex; justify-content: center; padding: 20px; }
+        .card { background: #1e1e1e; padding: 25px; border-radius: 15px; width: 450px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { margin-top: 0; color: #00d4ff; text-align: center; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.85em; color: #999; }
+        input { width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; font-size: 1em; }
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .res-box { background: #252525; padding: 12px; border-radius: 8px; border-top: 3px solid #00d4ff; }
+        .res-box h4 { margin: 0 0 5px 0; font-size: 0.8em; color: #888; text-transform: uppercase; }
+        .val { font-size: 1.1em; font-weight: bold; }
+        .verdict { font-weight: bold; text-align: center; padding: 15px; margin-top: 20px; border-radius: 8px; font-size: 1.1em; transition: 0.3s; }
+        .better-lavish { background: #1b4332; color: #74c69d; border: 1px solid #2d6a4f; }
+        .better-seller { background: #43281b; color: #ff9770; border: 1px solid #6a3e2d; }
+        .tax-note { color: #ff4d4d; font-size: 0.8em; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>DN Value Calculator</h2>
+    <h2>DN Profit Calc</h2>
     
     <div class="input-group">
-        <label>Gold Rate (IDR per 1,000g)</label>
-        <input type="number" id="idrRate" value="113" oninput="calculate()">
+        <label>Current Gold Rate (IDR per 1,000g)</label>
+        <input type="number" id="idrRate" value="113" oninput="update()">
     </div>
 
     <div class="input-group">
-        <label>Lavish Selling Price (In-game Gold)</label>
-        <input type="number" id="lavishGold" value="65000" oninput="calculate()">
+        <label>Lavish Market Price (Listed Gold)</label>
+        <input type="number" id="lavishPrice" value="65000" oninput="update()">
+        <div class="tax-note" id="taxDisplay">You receive: 58,500g (after 10% tax)</div>
     </div>
 
-    <div class="result-box">
-        <div id="myrSection"></div>
-        <div id="sgdSection" style="margin-top:10px; border-top: 1px solid #333; pt: 10px;"></div>
+    <div class="result-grid">
+        <div class="res-box">
+            <h4>1k Gold (MYR)</h4>
+            <div class="val" id="goldMyr">-</div>
+        </div>
+        <div class="res-box" style="border-color: #ffcc00;">
+            <h4>1k Gold (SGD)</h4>
+            <div class="val" id="goldSgd">-</div>
+        </div>
     </div>
 
-    <div id="verdict" class="verdict better"></div>
-    
-    <p class="info">
-        * Based on 100k CC = RM 304 (Rounded)<br>
+    <div id="verdict" class="verdict">Checking...</div>
+
+    <div style="font-size: 0.75em; color: #666; margin-top: 15px; line-height: 1.4;">
+        * Calculations based on 100k CC @ RM 304<br>
         * Lavish Cost: 5,900 CC (~RM 17.94)<br>
-        * Rates: 1 MYR ≈ 0.32 SGD | 1 MYR ≈ 4325 IDR
-    </p>
+        * Rates: 1 MYR = 4,325 IDR | 1 MYR = 0.32 SGD
+    </div>
 </div>
 
 <script>
-function calculate() {
-    // Constants
-    const CC_100K_PRICE_MYR = 304; 
-    const LAVISH_CC_COST = 5900;
-    const MYR_TO_SGD = 0.323;
+function update() {
+    // Current Constants (Feb 2026)
     const MYR_TO_IDR = 4325;
-
-    // Inputs
-    const idrRate = parseFloat(document.getElementById('idrRate').value);
-    const lavishGold = parseFloat(document.getElementById('lavishGold').value);
-
-    // 1. Calculate Lavish Efficiency
-    const lavishCostMYR = (LAVISH_CC_COST / 100000) * CC_100K_PRICE_MYR;
-    const goldPerMYR_Lavish = lavishGold / lavishCostMYR;
-
-    // 2. Calculate Seller Efficiency
-    // 113 IDR = 1000g -> Cost in MYR = (113 / 4325)
-    const costOf1kGoldMYR = idrRate / (MYR_TO_IDR / 1000); 
-    const goldPerMYR_Seller = 1000 / costOf1kGoldMYR;
-
-    // Display
-    document.getElementById('myrSection').innerHTML = `
-        <b>MYR Conversion:</b><br>
-        1k Gold Cost: RM ${costOf1kGoldMYR.toFixed(2)}<br>
-        Lavish Cost: RM ${lavishCostMYR.toFixed(2)}
-    `;
-
-    document.getElementById('sgdSection').innerHTML = `
-        <b>SGD Conversion:</b><br>
-        1k Gold Cost: SGD ${(costOf1kGoldMYR * MYR_TO_SGD).toFixed(2)}<br>
-        Lavish Cost: SGD ${(lavishCostMYR * MYR_TO_SGD).toFixed(2)}
-    `;
-
-    // Verdict
-    const verdictDiv = document.getElementById('verdict');
-    if (goldPerMYR_Lavish > goldPerMYR_Seller) {
-        verdictDiv.innerHTML = "SELL LAVISH<br><small>Cash items give more gold per RM/SGD</small>";
-    } else {
-        verdictDiv.innerHTML = "BUY FROM SELLER<br><small>Direct gold purchase is cheaper</small>";
-    }
-}
-
-// Initial Run
-calculate();
-</script>
-
-</body>
-</html>
+    const MYR_TO_SGD = 0.32;
+    const CC_100
